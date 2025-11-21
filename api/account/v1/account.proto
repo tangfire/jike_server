@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package account.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "jike_server/api/account/v1;v1";
+
+
+service Account{
+  rpc Authorizations(AuthorizationsReq) returns (AuthorizationsResp){
+    option(google.api.http) = {
+      post: "/v1/authorization",
+      body:"*"
+    };
+  }
+}
+
+
+message AuthorizationsReq {
+  string mobile = 1;
+  string code = 2;
+}
+
+message AuthorizationsResp{
+
+}
+
+
+
