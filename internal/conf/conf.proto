@@ -5,9 +5,12 @@ option go_package = "account/internal/conf;conf";
 
 import "google/protobuf/duration.proto";
 
+import "validate/validate.proto";
+
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  Auth auth = 3;
 }
 
 message Server {
@@ -35,7 +38,19 @@ message Data {
     string addr = 2;
     google.protobuf.Duration read_timeout = 3;
     google.protobuf.Duration write_timeout = 4;
+    string password = 5;
+    int32 db = 6;
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Auth{
+  Jwt jwt = 1;
+}
+
+message Jwt {
+  string secret = 1[(validate.rules).string = {min_len:1}];
+  string issuer = 2;
+  int64 expires_in = 3; // 过期时间(seconds)
 }

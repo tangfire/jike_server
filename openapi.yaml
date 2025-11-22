@@ -6,7 +6,7 @@ info:
     title: Account API
     version: 0.0.1
 paths:
-    /v1/authorization:
+    /v1/authorizations:
         post:
             tags:
                 - Account
@@ -41,7 +41,17 @@ components:
                     type: string
         AuthorizationsResp:
             type: object
-            properties: {}
+            properties:
+                token:
+                    type: string
+                expiresAt:
+                    type: string
+                userId:
+                    type: string
+                mobile:
+                    type: string
+                nickname:
+                    type: string
         GoogleProtobufAny:
             type: object
             properties:

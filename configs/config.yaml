@@ -1,15 +1,23 @@
 server:
   http:
-    addr: 0.0.0.0:8000
-    timeout: 1s
+    addr: 0.0.0.0:8001
+    timeout: 180s
   grpc:
     addr: 0.0.0.0:9000
-    timeout: 1s
+    timeout: 180s
 data:
   database:
     driver: mysql
-    source: root:8888.216@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+    source: root:8888.216@tcp(127.0.0.1:3306)/db_jike?parseTime=True&loc=Local
   redis:
     addr: 127.0.0.1:6379
-    read_timeout: 0.2s
-    write_timeout: 0.2s
+    password: "8888.216"
+    read_timeout: 180s
+    write_timeout: 180s
+    db: 0
+
+auth:
+  jwt:
+    secret: fireshine
+    issuer: tangfire
+    expires_in: 604800

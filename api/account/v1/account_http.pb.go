@@ -27,7 +27,7 @@ type AccountHTTPServer interface {
 
 func RegisterAccountHTTPServer(s *http.Server, srv AccountHTTPServer) {
 	r := s.Route("/")
-	r.POST("/v1/authorization", _Account_Authorizations0_HTTP_Handler(srv))
+	r.POST("/v1/authorizations", _Account_Authorizations0_HTTP_Handler(srv))
 }
 
 func _Account_Authorizations0_HTTP_Handler(srv AccountHTTPServer) func(ctx http.Context) error {
@@ -66,7 +66,7 @@ func NewAccountHTTPClient(client *http.Client) AccountHTTPClient {
 
 func (c *AccountHTTPClientImpl) Authorizations(ctx context.Context, in *AuthorizationsReq, opts ...http.CallOption) (*AuthorizationsResp, error) {
 	var out AuthorizationsResp
-	pattern := "/v1/authorization"
+	pattern := "/v1/authorizations"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAccountAuthorizations))
 	opts = append(opts, http.PathTemplate(pattern))

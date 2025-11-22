@@ -7,6 +7,7 @@
 package v1
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -76,6 +77,11 @@ func (x *AuthorizationsReq) GetCode() string {
 
 type AuthorizationsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	ExpiresAt     int64                  `protobuf:"varint,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	UserId        int64                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Mobile        string                 `protobuf:"bytes,4,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	Nickname      string                 `protobuf:"bytes,5,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -110,18 +116,59 @@ func (*AuthorizationsResp) Descriptor() ([]byte, []int) {
 	return file_api_account_v1_account_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *AuthorizationsResp) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthorizationsResp) GetExpiresAt() int64 {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return 0
+}
+
+func (x *AuthorizationsResp) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *AuthorizationsResp) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *AuthorizationsResp) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
 var File_api_account_v1_account_proto protoreflect.FileDescriptor
 
 const file_api_account_v1_account_proto_rawDesc = "" +
 	"\n" +
 	"\x1capi/account/v1/account.proto\x12\n" +
-	"account.v1\x1a\x1cgoogle/api/annotations.proto\"?\n" +
-	"\x11AuthorizationsReq\x12\x16\n" +
-	"\x06mobile\x18\x01 \x01(\tR\x06mobile\x12\x12\n" +
-	"\x04code\x18\x02 \x01(\tR\x04code\"\x14\n" +
-	"\x12AuthorizationsResp2x\n" +
-	"\aAccount\x12m\n" +
-	"\x0eAuthorizations\x12\x1d.account.v1.AuthorizationsReq\x1a\x1e.account.v1.AuthorizationsResp\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/authorizationB\x1fZ\x1djike_server/api/account/v1;v1b\x06proto3"
+	"account.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\"S\n" +
+	"\x11AuthorizationsReq\x12 \n" +
+	"\x06mobile\x18\x01 \x01(\tB\b\xfaB\x05r\x03\x98\x01\vR\x06mobile\x12\x1c\n" +
+	"\x04code\x18\x02 \x01(\tB\b\xfaB\x05r\x03\x98\x01\x06R\x04code\"\x96\x01\n" +
+	"\x12AuthorizationsResp\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\x12\x1d\n" +
+	"\n" +
+	"expires_at\x18\x02 \x01(\x03R\texpiresAt\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x16\n" +
+	"\x06mobile\x18\x04 \x01(\tR\x06mobile\x12\x1a\n" +
+	"\bnickname\x18\x05 \x01(\tR\bnickname2y\n" +
+	"\aAccount\x12n\n" +
+	"\x0eAuthorizations\x12\x1d.account.v1.AuthorizationsReq\x1a\x1e.account.v1.AuthorizationsResp\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authorizationsB\x1fZ\x1djike_server/api/account/v1;v1b\x06proto3"
 
 var (
 	file_api_account_v1_account_proto_rawDescOnce sync.Once
