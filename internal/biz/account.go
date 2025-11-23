@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	pb "jike_server/api/account/v1"
+	"jike_server/internal/middleware"
 	"jike_server/internal/pkg/auth"
 	"jike_server/internal/pkg/ecode"
 	"time"
@@ -29,6 +30,7 @@ type AccountModel struct {
 type AccountRepo interface {
 	AddAccount(context.Context, *AccountModel) error
 	GetAccountByMobile(context.Context, string) (bool, *AccountModel, error)
+	GetAccountById(context.Context, int64) (bool, *AccountModel, error)
 }
 
 type AccountUsecase struct {
@@ -109,4 +111,30 @@ func (u *AccountUsecase) VerifyCode(ctx context.Context, mobile, code string) (b
 		return false, ecode.InvalidParamsWithMsg("验证码错误")
 	}
 	return true, nil
+}
+
+func (u *AccountUsecase) GetAccountInfo(ctx context.Context, req *pb.GetAccountReq) (*pb.GetAccountResp, error) {
+	var resp *pb.GetAccountResp
+	info, isExist := middleware.FromContext(ctx)
+	if !isExist {
+		u.log.WithContext(ctx).Errorf("GetAccountInfo|FromContext fail,req:%v", req)
+		return resp, ecode.ErrUserNotFound
+	}
+	isExist, m, err := u.repo.GetAccountById(ctx, info.UserId)
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("GetAccountInfo|GetAccountById fail, account:%v, err:%v", info, err)
+		return resp, ecode.ErrUserNotFound
+	}
+	if !isExist {
+		return resp, nil
+	}
+	return &pb.GetAccountResp{
+		Birthday: m.Birthday.Format(time.DateOnly),
+		Gender:   int32(m.Gender),
+		Id:       m.Id,
+		Mobile:   m.Mobile,
+		Nickname: m.Nickname,
+		Avatar:   m.Avatar,
+	}, nil
+
 }

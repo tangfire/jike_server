@@ -20,14 +20,17 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationAccountAuthorizations = "/account.v1.Account/Authorizations"
+const OperationAccountGetAccountInfo = "/account.v1.Account/GetAccountInfo"
 
 type AccountHTTPServer interface {
 	Authorizations(context.Context, *AuthorizationsReq) (*AuthorizationsResp, error)
+	GetAccountInfo(context.Context, *GetAccountReq) (*GetAccountResp, error)
 }
 
 func RegisterAccountHTTPServer(s *http.Server, srv AccountHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/authorizations", _Account_Authorizations0_HTTP_Handler(srv))
+	r.GET("/v1/user/profile", _Account_GetAccountInfo0_HTTP_Handler(srv))
 }
 
 func _Account_Authorizations0_HTTP_Handler(srv AccountHTTPServer) func(ctx http.Context) error {
@@ -52,8 +55,28 @@ func _Account_Authorizations0_HTTP_Handler(srv AccountHTTPServer) func(ctx http.
 	}
 }
 
+func _Account_GetAccountInfo0_HTTP_Handler(srv AccountHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetAccountReq
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAccountGetAccountInfo)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetAccountInfo(ctx, req.(*GetAccountReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetAccountResp)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AccountHTTPClient interface {
 	Authorizations(ctx context.Context, req *AuthorizationsReq, opts ...http.CallOption) (rsp *AuthorizationsResp, err error)
+	GetAccountInfo(ctx context.Context, req *GetAccountReq, opts ...http.CallOption) (rsp *GetAccountResp, err error)
 }
 
 type AccountHTTPClientImpl struct {
@@ -71,6 +94,19 @@ func (c *AccountHTTPClientImpl) Authorizations(ctx context.Context, in *Authoriz
 	opts = append(opts, http.Operation(OperationAccountAuthorizations))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AccountHTTPClientImpl) GetAccountInfo(ctx context.Context, in *GetAccountReq, opts ...http.CallOption) (*GetAccountResp, error) {
+	var out GetAccountResp
+	pattern := "/v1/user/profile"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAccountGetAccountInfo))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package data
 
 import (
 	"gorm.io/gorm"
+	"jike_server/internal/biz"
 	"time"
 )
 
@@ -37,4 +38,44 @@ func (a *Account) BeforeCreate(tx *gorm.DB) error {
 		a.LastLoginAt = time.Now()
 	}
 	return nil
+}
+
+// 在 data 层实现转换逻辑
+func (d *Account) Data2Biz() *biz.AccountModel {
+	return &biz.AccountModel{
+		Id:          d.Id,
+		Mobile:      d.Mobile,
+		Email:       d.Email,
+		Password:    d.Password,
+		Nickname:    d.Nickname,
+		Avatar:      d.Avatar,
+		Gender:      d.Gender,
+		Birthday:    d.Birthday,
+		Bio:         d.Bio,
+		Status:      d.Status,
+		LastLoginAt: d.LastLoginAt,
+		CreatedAt:   d.CreatedAt,
+		UpdatedAt:   d.UpdatedAt,
+	}
+}
+
+func (d *Account) Biz2Data(b *biz.AccountModel) {
+	if d == nil {
+		return
+	}
+	*d = Account{
+		Id:          b.Id,
+		Mobile:      b.Mobile,
+		Email:       b.Email,
+		Password:    b.Password,
+		Nickname:    b.Nickname,
+		Avatar:      b.Avatar,
+		Gender:      b.Gender,
+		Birthday:    b.Birthday,
+		Bio:         b.Bio,
+		Status:      b.Status,
+		LastLoginAt: b.LastLoginAt,
+		CreatedAt:   b.CreatedAt,
+		UpdatedAt:   b.UpdatedAt,
+	}
 }

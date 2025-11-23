@@ -20,46 +20,10 @@ func NewAccountRepo(data *Data, logger log.Logger) biz.AccountRepo {
 	}
 }
 
-// 在 data 层实现转换逻辑
-func toBizModel(d Account) *biz.AccountModel {
-	return &biz.AccountModel{
-		Id:          d.Id,
-		Mobile:      d.Mobile,
-		Email:       d.Email,
-		Password:    d.Password,
-		Nickname:    d.Nickname,
-		Avatar:      d.Avatar,
-		Gender:      d.Gender,
-		Birthday:    d.Birthday,
-		Bio:         d.Bio,
-		Status:      d.Status,
-		LastLoginAt: d.LastLoginAt,
-		CreatedAt:   d.CreatedAt,
-		UpdatedAt:   d.UpdatedAt,
-	}
-}
-
-func toDataModel(b *biz.AccountModel) Account {
-	return Account{
-		Id:          b.Id,
-		Mobile:      b.Mobile,
-		Email:       b.Email,
-		Password:    b.Password,
-		Nickname:    b.Nickname,
-		Avatar:      b.Avatar,
-		Gender:      b.Gender,
-		Birthday:    b.Birthday,
-		Bio:         b.Bio,
-		Status:      b.Status,
-		LastLoginAt: b.LastLoginAt,
-		CreatedAt:   b.CreatedAt,
-		UpdatedAt:   b.UpdatedAt,
-	}
-}
-
 func (r *accountRepo) AddAccount(ctx context.Context, a *biz.AccountModel) error {
 	// 1. 一定要将 ctx 传递给数据库操作
-	data := toDataModel(a)
+	data := Account{}
+	data.Biz2Data(a)
 	err := r.data.db.WithContext(ctx).Create(&data).Error
 	if err != nil {
 		// 2. 使用带上下文的日志记录
@@ -79,5 +43,20 @@ func (r *accountRepo) GetAccountByMobile(ctx context.Context, mobile string) (bo
 		r.log.WithContext(ctx).Errorf("GetAccountByMobile|First fail, data:%v, err:%v", data, err)
 		return false, nil, err
 	}
-	return true, toBizModel(data), nil
+	m := data.Data2Biz()
+	return true, m, nil
+}
+
+func (r *accountRepo) GetAccountById(ctx context.Context, id int64) (bool, *biz.AccountModel, error) {
+	data := Account{}
+	err := r.data.db.WithContext(ctx).Where("id = ?", id).First(&data).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil, nil
+	}
+	if err != nil {
+		r.log.WithContext(ctx).Errorf("GetAccountById|First fail, data:%v, err:%v", data, err)
+		return false, nil, err
+	}
+	m := data.Data2Biz()
+	return true, m, nil
 }

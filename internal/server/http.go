@@ -8,7 +8,8 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/handlers"
-	v1 "jike_server/api/account/v1"
+	account_v1 "jike_server/api/account/v1"
+	article_v1 "jike_server/api/article/v1"
 	"jike_server/internal/conf"
 	"jike_server/internal/middleware"
 	"jike_server/internal/pkg/auth"
@@ -16,7 +17,7 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, account *service.AccountService, jwt *auth.JWT, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, account *service.AccountService, article *service.ArticleService, jwt *auth.JWT, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
@@ -49,7 +50,9 @@ func NewHTTPServer(c *conf.Server, account *service.AccountService, jwt *auth.JW
 		opts = append(opts, http.Timeout(c.Http.Timeout.AsDuration()))
 	}
 	srv := http.NewServer(opts...)
-	v1.RegisterAccountHTTPServer(srv, account)
+	account_v1.RegisterAccountHTTPServer(srv, account)
+	article_v1.RegisterArticleHTTPServer(srv, article)
+
 	return srv
 }
 

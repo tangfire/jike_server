@@ -151,6 +151,126 @@ func (x *AuthorizationsResp) GetNickname() string {
 	return ""
 }
 
+type GetAccountReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountReq) Reset() {
+	*x = GetAccountReq{}
+	mi := &file_api_account_v1_account_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountReq) ProtoMessage() {}
+
+func (x *GetAccountReq) ProtoReflect() protoreflect.Message {
+	mi := &file_api_account_v1_account_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountReq.ProtoReflect.Descriptor instead.
+func (*GetAccountReq) Descriptor() ([]byte, []int) {
+	return file_api_account_v1_account_proto_rawDescGZIP(), []int{2}
+}
+
+type GetAccountResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Birthday      string                 `protobuf:"bytes,1,opt,name=birthday,proto3" json:"birthday,omitempty"`
+	Gender        int32                  `protobuf:"varint,2,opt,name=gender,proto3" json:"gender,omitempty"`
+	Id            int64                  `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
+	Mobile        string                 `protobuf:"bytes,4,opt,name=mobile,proto3" json:"mobile,omitempty"`
+	Nickname      string                 `protobuf:"bytes,5,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Avatar        string                 `protobuf:"bytes,6,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountResp) Reset() {
+	*x = GetAccountResp{}
+	mi := &file_api_account_v1_account_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountResp) ProtoMessage() {}
+
+func (x *GetAccountResp) ProtoReflect() protoreflect.Message {
+	mi := &file_api_account_v1_account_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountResp.ProtoReflect.Descriptor instead.
+func (*GetAccountResp) Descriptor() ([]byte, []int) {
+	return file_api_account_v1_account_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetAccountResp) GetBirthday() string {
+	if x != nil {
+		return x.Birthday
+	}
+	return ""
+}
+
+func (x *GetAccountResp) GetGender() int32 {
+	if x != nil {
+		return x.Gender
+	}
+	return 0
+}
+
+func (x *GetAccountResp) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *GetAccountResp) GetMobile() string {
+	if x != nil {
+		return x.Mobile
+	}
+	return ""
+}
+
+func (x *GetAccountResp) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *GetAccountResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
 var File_api_account_v1_account_proto protoreflect.FileDescriptor
 
 const file_api_account_v1_account_proto_rawDesc = "" +
@@ -166,9 +286,18 @@ const file_api_account_v1_account_proto_rawDesc = "" +
 	"expires_at\x18\x02 \x01(\x03R\texpiresAt\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x16\n" +
 	"\x06mobile\x18\x04 \x01(\tR\x06mobile\x12\x1a\n" +
-	"\bnickname\x18\x05 \x01(\tR\bnickname2y\n" +
+	"\bnickname\x18\x05 \x01(\tR\bnickname\"\x0f\n" +
+	"\rGetAccountReq\"\xa0\x01\n" +
+	"\x0eGetAccountResp\x12\x1a\n" +
+	"\bbirthday\x18\x01 \x01(\tR\bbirthday\x12\x16\n" +
+	"\x06gender\x18\x02 \x01(\x05R\x06gender\x12\x0e\n" +
+	"\x02id\x18\x03 \x01(\x03R\x02id\x12\x16\n" +
+	"\x06mobile\x18\x04 \x01(\tR\x06mobile\x12\x1a\n" +
+	"\bnickname\x18\x05 \x01(\tR\bnickname\x12\x16\n" +
+	"\x06avatar\x18\x06 \x01(\tR\x06avatar2\xdc\x01\n" +
 	"\aAccount\x12n\n" +
-	"\x0eAuthorizations\x12\x1d.account.v1.AuthorizationsReq\x1a\x1e.account.v1.AuthorizationsResp\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authorizationsB\x1fZ\x1djike_server/api/account/v1;v1b\x06proto3"
+	"\x0eAuthorizations\x12\x1d.account.v1.AuthorizationsReq\x1a\x1e.account.v1.AuthorizationsResp\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/authorizations\x12a\n" +
+	"\x0eGetAccountInfo\x12\x19.account.v1.GetAccountReq\x1a\x1a.account.v1.GetAccountResp\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/user/profileB\x1fZ\x1djike_server/api/account/v1;v1b\x06proto3"
 
 var (
 	file_api_account_v1_account_proto_rawDescOnce sync.Once
@@ -182,16 +311,20 @@ func file_api_account_v1_account_proto_rawDescGZIP() []byte {
 	return file_api_account_v1_account_proto_rawDescData
 }
 
-var file_api_account_v1_account_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_api_account_v1_account_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_api_account_v1_account_proto_goTypes = []any{
 	(*AuthorizationsReq)(nil),  // 0: account.v1.AuthorizationsReq
 	(*AuthorizationsResp)(nil), // 1: account.v1.AuthorizationsResp
+	(*GetAccountReq)(nil),      // 2: account.v1.GetAccountReq
+	(*GetAccountResp)(nil),     // 3: account.v1.GetAccountResp
 }
 var file_api_account_v1_account_proto_depIdxs = []int32{
 	0, // 0: account.v1.Account.Authorizations:input_type -> account.v1.AuthorizationsReq
-	1, // 1: account.v1.Account.Authorizations:output_type -> account.v1.AuthorizationsResp
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: account.v1.Account.GetAccountInfo:input_type -> account.v1.GetAccountReq
+	1, // 2: account.v1.Account.Authorizations:output_type -> account.v1.AuthorizationsResp
+	3, // 3: account.v1.Account.GetAccountInfo:output_type -> account.v1.GetAccountResp
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -208,7 +341,7 @@ func file_api_account_v1_account_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_account_v1_account_proto_rawDesc), len(file_api_account_v1_account_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

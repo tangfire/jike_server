@@ -30,3 +30,12 @@ func (s *AccountService) Authorizations(ctx context.Context, req *pb.Authorizati
 	s.log.WithContext(ctx).Infof("Authorizations success: userId=%d, mobile=%s", resp.UserId, resp.Mobile)
 	return resp, nil
 }
+
+func (s *AccountService) GetAccountInfo(ctx context.Context, req *pb.GetAccountReq) (*pb.GetAccountResp, error) {
+	resp, err := s.uc.GetAccountInfo(ctx, req)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("GetAccountInfo failed: %v", err)
+		return nil, err
+	}
+	return resp, nil
+}

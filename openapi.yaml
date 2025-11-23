@@ -3,19 +3,37 @@
 
 openapi: 3.0.3
 info:
-    title: Account API
+    title: Article API
     version: 0.0.1
 paths:
-    /v1/authorizations:
+    /v1/channels:
+        get:
+            tags:
+                - Article
+            operationId: Article_GetArticleChannel
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetArticleChannelResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/mp/articles:
         post:
             tags:
-                - Account
-            operationId: Account_Authorizations
+                - Article
+            operationId: Article_AddArticle
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/AuthorizationsReq'
+                            $ref: '#/components/schemas/AddArticleReq'
                 required: true
             responses:
                 "200":
@@ -23,7 +41,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/AuthorizationsResp'
+                                $ref: '#/components/schemas/AddArticleResp'
                 default:
                     description: Default error response
                     content:
@@ -32,26 +50,47 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
-        AuthorizationsReq:
+        AddArticleReq:
             type: object
             properties:
-                mobile:
+                draft:
                     type: string
-                code:
+                title:
                     type: string
-        AuthorizationsResp:
+                content:
+                    type: string
+                channelId:
+                    type: string
+                cover:
+                    $ref: '#/components/schemas/Cover'
+        AddArticleResp:
             type: object
             properties:
-                token:
+                id:
                     type: string
-                expiresAt:
+        ArticleChannel:
+            type: object
+            properties:
+                id:
                     type: string
-                userId:
+                name:
                     type: string
-                mobile:
+        Cover:
+            type: object
+            properties:
+                images:
+                    type: array
+                    items:
+                        type: string
+                type:
                     type: string
-                nickname:
-                    type: string
+        GetArticleChannelResp:
+            type: object
+            properties:
+                channels:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ArticleChannel'
         GoogleProtobufAny:
             type: object
             properties:
@@ -77,4 +116,4 @@ components:
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
 tags:
-    - name: Account
+    - name: Article

@@ -15,6 +15,13 @@ service Account{
       body:"*"
     };
   }
+
+  rpc GetAccountInfo(GetAccountReq) returns (GetAccountResp){
+    option(google.api.http) = {
+      get: "/v1/user/profile",
+    };
+  }
+
 }
 
 
@@ -31,5 +38,17 @@ message AuthorizationsResp{
   string nickname = 5;
 }
 
+message GetAccountReq{
+
+}
+
+message GetAccountResp{
+  string birthday = 1;
+  int32 gender = 2;
+  int64 id = 3;
+  string mobile = 4;
+  string nickname = 5;
+  string avatar = 6;
+}
 
 

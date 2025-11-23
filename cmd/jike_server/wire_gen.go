@@ -33,7 +33,12 @@ func wireApp(confServer *conf.Server, confData *conf.Data, auth *conf.Auth, logg
 	jwt := provideJWT(auth)
 	accountUsecase := biz.NewAccountUsecase(accountRepo, jwt, logger)
 	accountService := service.NewAccountService(accountUsecase, logger)
-	httpServer := server.NewHTTPServer(confServer, accountService, jwt, logger)
+	articleRepo := data.NewArticleRepo(dataData, logger)
+	articleUsecase := biz.NewArticleUsecase(articleRepo, logger)
+	articleChannelRepo := data.NewArticleChannelRepo(dataData, logger)
+	articleChannelUsecase := biz.NewArticleChannelUsecase(articleChannelRepo, logger)
+	articleService := service.NewArticleService(articleUsecase, articleChannelUsecase, logger)
+	httpServer := server.NewHTTPServer(confServer, accountService, articleService, jwt, logger)
 	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()

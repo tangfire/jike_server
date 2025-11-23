@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package article.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "jike_server/api/article/v1;v1";
+
+
+service Article{
+
+  rpc GetArticleChannel(GetArticleChannelReq) returns(GetArticleChannelResp){
+    option (google.api.http) = {
+      get: "/v1/channels"
+    };
+  }
+
+  rpc AddArticle(AddArticleReq) returns(AddArticleResp){
+    option(google.api.http) = {
+     post: "/v1/mp/articles"
+      body: "*"
+    };
+  }
+}
+
+message GetArticleChannelReq {
+
+}
+
+message ArticleChannel{
+  int64 id = 1;
+  string name = 2;
+}
+
+message GetArticleChannelResp{
+  repeated ArticleChannel channels = 1;
+}
+
+message Cover{
+  repeated string images = 1; // 封面图片
+  int64 type = 2;
+
+}
+
+message AddArticleReq{
+  string draft = 1;  // query 参数，对应 ?draft=xxx
+  string title = 2;   // body 参数
+  string content = 3; // body 参数
+  int64 channel_id = 4; // body 参数
+  Cover cover = 5;
+}
+
+message AddArticleResp{
+  int64 id = 1;
+}
+
