@@ -33,6 +33,7 @@ func init() {
 }
 
 func newApp(logger log.Logger, hs *http.Server) *kratos.App {
+
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),

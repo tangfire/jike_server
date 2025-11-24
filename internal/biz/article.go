@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+var (
+	MaxFileSize  = 10 * 1024 * 1024 // 10MB
+	AllowedTypes = map[string]bool{"image/jpeg": true, "image/png": true, "image/gif": true, "image/webp": true}
+	UploadDir    = "./uploads"
+)
+
 type ArticleModel struct {
 	Id           int64     `json:"id"`            // 文章Id
 	Title        string    `json:"title"`         // 文章标题
