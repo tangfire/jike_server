@@ -34,8 +34,18 @@ type ArticleModel struct {
 	UpdatedAt    time.Time `json:"updated_at"`    // 更新时间
 }
 
+type PageArticle struct {
+	Status       int64  `json:"status"`
+	ChannelId    int64  `json:"channel_id"`
+	BeginPubdate string `json:"begin_pubdate"`
+	EndPubdate   string `json:"end_pubdate"`
+	Page         int64  `json:"page"`
+	PageSize     int64  `json:"page_size"`
+}
+
 type ArticleRepo interface {
 	AddArticle(ctx context.Context, article *ArticleModel) (int64, error)
+	GetArticleList(ctx context.Context, p *PageArticle) (int64, []*ArticleModel, error)
 }
 
 type ArticleUsecase struct {
@@ -75,4 +85,44 @@ func (u *ArticleUsecase) AddArticle(ctx context.Context, req *pb.AddArticleReq) 
 	return &pb.AddArticleResp{
 		Id: id,
 	}, nil
+}
+
+func (u *ArticleUsecase) GetArticleList(ctx context.Context, req *pb.GetArticleListReq) (*pb.GetArticleListResp, error) {
+	p := PageArticle{
+		Status:       req.GetStatus(),
+		ChannelId:    req.GetChannelId(),
+		BeginPubdate: req.GetBeginPubdate(),
+		EndPubdate:   req.GetEndPubdate(),
+		Page:         req.GetPage(),
+		PageSize:     req.GetPageSize(),
+	}
+	total, list, err := u.repo.GetArticleList(ctx, &p)
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("GetArticleList|GetArticleList fail,req:%v,err:%v", req, err)
+		return nil, err
+	}
+	retList := utils.Slice2Slice(list, func(m *ArticleModel) *pb.ArticleInfo {
+		return &pb.ArticleInfo{
+			Id:           m.Id,
+			Title:        m.Title,
+			Content:      m.Content,
+			CoverType:    int64(m.CoverType),
+			CoverImages:  m.CoverImages,
+			ChannelId:    m.ChannelId,
+			Status:       int64(m.Status),
+			AuthorId:     m.AuthorId,
+			ViewCount:    m.ViewCount,
+			LikeCount:    m.LikeCount,
+			CommentCount: m.CommentCount,
+			IsTop:        int64(m.IsTop),
+			IsRecommend:  int64(m.IsRecommend),
+			CreatedAt:    nil,
+			UpdatedAt:    nil,
+		}
+	})
+	return &pb.GetArticleListResp{
+		Total: total,
+		List:  retList,
+	}, nil
+
 }

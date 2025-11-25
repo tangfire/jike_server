@@ -44,7 +44,7 @@ CREATE TABLE `article` (
                            `cover_type` tinyint(4) NOT NULL DEFAULT 1 COMMENT '封面类型：1-无图，2-单图，3-多图',
                            `cover_images` varchar(200) DEFAULT NULL COMMENT '封面图片地址数组',
                            `channel_id` bigint(20) NOT NULL COMMENT '频道Id',
-                           `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '文章状态：0-草稿，1-已发布，2-已删除',
+                           `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '文章状态：1-草稿，2-已发布，3-已封禁',
                            `author_id` bigint(20) NOT NULL COMMENT '作者Id',
                            `view_count` int(11) NOT NULL DEFAULT 0 COMMENT '阅读量',
                            `like_count` int(11) NOT NULL DEFAULT 0 COMMENT '点赞数',

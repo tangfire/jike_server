@@ -25,6 +25,48 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /v1/mp/articles:
+        get:
+            tags:
+                - Article
+            operationId: Article_GetArticleList
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                    type: string
+                - name: channelId
+                  in: query
+                  schema:
+                    type: string
+                - name: beginPubdate
+                  in: query
+                  schema:
+                    type: string
+                - name: endPubdate
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetArticleListResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
         post:
             tags:
                 - Article
@@ -75,6 +117,43 @@ components:
                     type: string
                 name:
                     type: string
+        ArticleInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                content:
+                    type: string
+                coverType:
+                    type: string
+                coverImages:
+                    type: array
+                    items:
+                        type: string
+                channelId:
+                    type: string
+                status:
+                    type: string
+                authorId:
+                    type: string
+                viewCount:
+                    type: string
+                likeCount:
+                    type: string
+                commentCount:
+                    type: string
+                isTop:
+                    type: string
+                isRecommend:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
         Cover:
             type: object
             properties:
@@ -91,6 +170,15 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/ArticleChannel'
+        GetArticleListResp:
+            type: object
+            properties:
+                total:
+                    type: string
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ArticleInfo'
         GoogleProtobufAny:
             type: object
             properties:

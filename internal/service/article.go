@@ -35,3 +35,12 @@ func (s *ArticleService) AddArticle(ctx context.Context, req *pb.AddArticleReq) 
 	}
 	return resp, nil
 }
+
+func (s *ArticleService) GetArticleList(ctx context.Context, req *pb.GetArticleListReq) (*pb.GetArticleListResp, error) {
+	resp, err := s.uc.GetArticleList(ctx, req)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("get article list failed: %v", err)
+		return nil, err
+	}
+	return resp, nil
+}

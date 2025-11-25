@@ -4,6 +4,7 @@ package article.v1;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "jike_server/api/article/v1;v1";
 
@@ -22,6 +23,13 @@ service Article{
       body: "*"
     };
   }
+
+  rpc GetArticleList(GetArticleListReq) returns (GetArticleListResp){
+    option (google.api.http) = {
+      get: "/v1/mp/articles"
+    };
+  }
+
 
 }
 
@@ -55,5 +63,39 @@ message AddArticleReq{
 message AddArticleResp{
   int64 id = 1;
 }
+
+message GetArticleListReq{
+  int64 status = 1;
+  int64 channel_id = 2;
+  string begin_pubdate = 3;
+  string end_pubdate = 4;
+  int64 page = 5;
+  int64 page_size = 6;
+}
+
+message ArticleInfo {
+  int64 id = 1;                       // 文章Id
+  string title = 2;                   // 文章标题
+  string content = 3;                 // 文章内容
+  int64 cover_type = 4;               // 封面类型：1-无图，2-单图，3-多图
+  repeated string cover_images = 5;   // 封面图片地址数组
+  int64 channel_id = 6;               // 频道Id
+  int64 status = 7;                   // 文章状态：0-草稿，1-已发布，2-已删除
+  int64 author_id = 8;                // 作者Id
+  int64 view_count = 9;               // 阅读量
+  int64 like_count = 10;              // 点赞数
+  int64 comment_count = 11;           // 评论数
+  int64 is_top = 12;                  // 是否置顶：0-否，1-是
+  int64 is_recommend = 13;            // 是否推荐：0-否，1-是
+  google.protobuf.Timestamp created_at = 14;  // 创建时间
+  google.protobuf.Timestamp updated_at = 15;  // 更新时间
+}
+
+message GetArticleListResp{
+  int64 total = 1;
+  repeated ArticleInfo list = 2;
+}
+
+
 
 
