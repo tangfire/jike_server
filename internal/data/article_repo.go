@@ -66,3 +66,16 @@ func (r *articleRepo) GetArticleList(ctx context.Context, p *biz.PageArticle) (i
 	})
 	return total, retList, nil
 }
+
+func (r *articleRepo) UpdateArticleStatus(ctx context.Context, idList []int64, status int) (int64, error) {
+	result := r.data.db.WithContext(ctx).Model(&Article{}).
+		Where("id IN (?)", idList).
+		Update("status", status)
+
+	if result.Error != nil {
+		r.log.WithContext(ctx).Errorf("UpdateArticleStatus|Update fail, idList:%v, err:%v", idList, result.Error)
+		return 0, result.Error
+	}
+
+	return result.RowsAffected, nil
+}

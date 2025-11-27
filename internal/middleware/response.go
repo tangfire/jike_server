@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"encoding/json"
+	"google.golang.org/protobuf/encoding/protojson"
 	"net/http"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
+	"google.golang.org/protobuf/proto"
 )
 
 // 统一响应格式
@@ -58,8 +60,35 @@ func ResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) erro
 		return json.NewEncoder(w).Encode(resp)
 	}
 
+	// 检查是否为 protobuf 消息
+	if pm, ok := v.(proto.Message); ok {
+		//使用 protojson 序列化 protobuf 消息，保留零值字段
+		marshalOptions := protojson.MarshalOptions{
+			EmitUnpopulated: true, // 保留零值字段
+			UseProtoNames:   true, // 使用 proto 字段名
+		}
+
+		// 先序列化 protobuf 数据
+		protoData, err := marshalOptions.Marshal(pm)
+		if err != nil {
+			return err
+		}
+
+		// 将序列化后的 JSON 字节转换为 interface{}
+		var data interface{}
+		if err := json.Unmarshal(protoData, &data); err != nil {
+			return err
+		}
+
+		// 创建成功响应
+		resp := success(data)
+		//resp := success(pm)
+		return json.NewEncoder(w).Encode(resp)
+	}
+
 	// 其他类型包装为成功响应
-	return json.NewEncoder(w).Encode(success(v))
+	resp := success(v)
+	return json.NewEncoder(w).Encode(resp)
 }
 
 // 自定义错误编码器

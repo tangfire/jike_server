@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	pb "jike_server/api/article/v1"
 	"jike_server/internal/middleware"
 	"jike_server/internal/pkg/ecode"
@@ -46,6 +47,7 @@ type PageArticle struct {
 type ArticleRepo interface {
 	AddArticle(ctx context.Context, article *ArticleModel) (int64, error)
 	GetArticleList(ctx context.Context, p *PageArticle) (int64, []*ArticleModel, error)
+	UpdateArticleStatus(ctx context.Context, idList []int64, status int) (int64, error)
 }
 
 type ArticleUsecase struct {
@@ -68,7 +70,7 @@ func (u *ArticleUsecase) AddArticle(ctx context.Context, req *pb.AddArticleReq) 
 		CoverType:    int8(req.GetCover().GetType()),
 		CoverImages:  req.GetCover().GetImages(),
 		ChannelId:    req.GetChannelId(),
-		Status:       int8(utils.If(req.GetDraft() == "true", 0, 1)),
+		Status:       int8(utils.If(req.GetDraft() == "true", 1, 2)),
 		AuthorId:     info.UserId,
 		ViewCount:    0,
 		LikeCount:    0,
@@ -116,13 +118,31 @@ func (u *ArticleUsecase) GetArticleList(ctx context.Context, req *pb.GetArticleL
 			CommentCount: m.CommentCount,
 			IsTop:        int64(m.IsTop),
 			IsRecommend:  int64(m.IsRecommend),
-			CreatedAt:    nil,
-			UpdatedAt:    nil,
+			CreatedAt:    timestamppb.New(m.CreatedAt),
+			UpdatedAt:    timestamppb.New(m.UpdatedAt),
 		}
 	})
 	return &pb.GetArticleListResp{
 		Total: total,
 		List:  retList,
 	}, nil
+}
 
+func (u *ArticleUsecase) DoReviewPassed(ctx context.Context) error {
+	_, list, err := u.repo.GetArticleList(ctx, &PageArticle{
+		Status: 1,
+	})
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("doReviewPassed|GetArticleList fail,err:%v", err)
+		return err
+	}
+	idList := utils.Slice2Slice(list, func(m *ArticleModel) int64 {
+		return m.Id
+	})
+	_, err = u.repo.UpdateArticleStatus(ctx, idList, 2)
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("doReviewPassed|UpdateArticleStatus fail,err:%v", err)
+		return err
+	}
+	return nil
 }
