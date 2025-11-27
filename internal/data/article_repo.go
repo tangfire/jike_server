@@ -22,7 +22,7 @@ func NewArticleRepo(data *Data, logger log.Logger) biz.ArticleRepo {
 func (r *articleRepo) AddArticle(ctx context.Context, article *biz.ArticleModel) (int64, error) {
 	d := Article{}
 	d.Biz2Data(article)
-	err := r.data.db.WithContext(ctx).Model(&Article{}).Create(&article).Error
+	err := r.data.db.WithContext(ctx).Model(&Article{}).Create(&d).Error
 	if err != nil {
 		r.log.WithContext(ctx).Errorf("AddArticle|Create fail,data:%v,err:%v", article, err)
 		return 0, err
