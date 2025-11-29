@@ -30,6 +30,26 @@ service Article{
     };
   }
 
+  rpc GetArticleById(GetArticleByIdReq) returns (GetArticleByIdResp){
+    option (google.api.http) = {
+      get: "/v1/mp/articles/{target}"
+    };
+  }
+
+  rpc UpdateArticleById(UpdateArticleByIdReq) returns (UpdateArticleByIdResp){
+    option (google.api.http) = {
+      put:"/v1/mp/articles/{target}",
+      body:"*"
+    };
+  }
+
+
+  rpc DeleteArticle(DeleteArticleReq) returns (DeleteArticleResp){
+    option (google.api.http) = {
+      delete: "/v1/mp/articles/{target}"
+    };
+  }
+
 
 }
 
@@ -96,6 +116,47 @@ message GetArticleListResp{
   repeated ArticleInfo list = 2;
 }
 
+message GetArticleByIdReq{
+  int64 target = 1;
+}
+
+message GetArticleByIdResp{
+  int64 id = 1;                       // 文章Id
+  string title = 2;                   // 文章标题
+  string content = 3;                 // 文章内容
+  int64 cover_type = 4;               // 封面类型：1-无图，2-单图，3-多图
+  repeated string cover_images = 5;   // 封面图片地址数组
+  int64 channel_id = 6;               // 频道Id
+  int64 status = 7;                   // 文章状态：0-草稿，1-已发布，2-已删除
+  int64 author_id = 8;                // 作者Id
+  int64 view_count = 9;               // 阅读量
+  int64 like_count = 10;              // 点赞数
+  int64 comment_count = 11;           // 评论数
+  int64 is_top = 12;                  // 是否置顶：0-否，1-是
+  int64 is_recommend = 13;            // 是否推荐：0-否，1-是
+  google.protobuf.Timestamp created_at = 14;  // 创建时间
+  google.protobuf.Timestamp updated_at = 15;  // 更新时间
+}
+
+message DeleteArticleReq{
+  int64 target = 1;
+}
+
+message DeleteArticleResp{
+
+}
+
+message UpdateArticleByIdReq{
+  int64 target = 1;
+  string draft = 2;  // query 参数，对应 ?draft=xxx
+  string title = 3;   // body 参数
+  string content = 4; // body 参数
+  int64 channel_id = 5; // body 参数
+  Cover cover = 6;
+}
 
 
+message UpdateArticleByIdResp{
+
+}
 

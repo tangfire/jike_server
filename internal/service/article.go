@@ -44,3 +44,30 @@ func (s *ArticleService) GetArticleList(ctx context.Context, req *pb.GetArticleL
 	}
 	return resp, nil
 }
+
+func (s *ArticleService) DeleteArticle(ctx context.Context, req *pb.DeleteArticleReq) (*pb.DeleteArticleResp, error) {
+	resp, err := s.uc.DeleteArticle(ctx, req)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("delete article failed: %v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *ArticleService) GetArticleById(ctx context.Context, req *pb.GetArticleByIdReq) (*pb.GetArticleByIdResp, error) {
+	resp, err := s.uc.GetArticleById(ctx, req)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("get article by id failed: %v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *ArticleService) UpdateArticleById(ctx context.Context, req *pb.UpdateArticleByIdReq) (*pb.UpdateArticleByIdResp, error) {
+	resp, err := s.uc.UpdateArticleById(ctx, req)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("update article failed: %v", err)
+		return nil, err
+	}
+	return resp, nil
+}

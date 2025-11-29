@@ -90,6 +90,82 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/mp/articles/{target}:
+        get:
+            tags:
+                - Article
+            operationId: Article_GetArticleById
+            parameters:
+                - name: target
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetArticleByIdResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Article
+            operationId: Article_UpdateArticleById
+            parameters:
+                - name: target
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateArticleByIdReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateArticleByIdResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Article
+            operationId: Article_DeleteArticle
+            parameters:
+                - name: target
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteArticleResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AddArticleReq:
@@ -163,6 +239,46 @@ components:
                         type: string
                 type:
                     type: string
+        DeleteArticleResp:
+            type: object
+            properties: {}
+        GetArticleByIdResp:
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                content:
+                    type: string
+                coverType:
+                    type: string
+                coverImages:
+                    type: array
+                    items:
+                        type: string
+                channelId:
+                    type: string
+                status:
+                    type: string
+                authorId:
+                    type: string
+                viewCount:
+                    type: string
+                likeCount:
+                    type: string
+                commentCount:
+                    type: string
+                isTop:
+                    type: string
+                isRecommend:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
         GetArticleChannelResp:
             type: object
             properties:
@@ -203,5 +319,23 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UpdateArticleByIdReq:
+            type: object
+            properties:
+                target:
+                    type: string
+                draft:
+                    type: string
+                title:
+                    type: string
+                content:
+                    type: string
+                channelId:
+                    type: string
+                cover:
+                    $ref: '#/components/schemas/Cover'
+        UpdateArticleByIdResp:
+            type: object
+            properties: {}
 tags:
     - name: Article

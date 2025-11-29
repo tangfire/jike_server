@@ -48,6 +48,9 @@ type ArticleRepo interface {
 	AddArticle(ctx context.Context, article *ArticleModel) (int64, error)
 	GetArticleList(ctx context.Context, p *PageArticle) (int64, []*ArticleModel, error)
 	UpdateArticleStatus(ctx context.Context, idList []int64, status int) (int64, error)
+	DeleteArticleById(ctx context.Context, id int64) error
+	GetArticleById(ctx context.Context, id int64) (bool, *ArticleModel, error)
+	UpdateArticleById(ctx context.Context, article *ArticleModel) error
 }
 
 type ArticleUsecase struct {
@@ -145,4 +148,71 @@ func (u *ArticleUsecase) DoReviewPassed(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (u *ArticleUsecase) DeleteArticle(ctx context.Context, req *pb.DeleteArticleReq) (*pb.DeleteArticleResp, error) {
+	err := u.repo.DeleteArticleById(ctx, req.Target)
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("DeleteArticle|DeleteArticle fail,err:%v", err)
+		return nil, err
+	}
+	return nil, nil
+}
+
+func (u *ArticleUsecase) GetArticleById(ctx context.Context, req *pb.GetArticleByIdReq) (*pb.GetArticleByIdResp, error) {
+	isExist, m, err := u.repo.GetArticleById(ctx, req.GetTarget())
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("GetArticleById|GetArticleById fail,err:%v", err)
+		return nil, err
+	}
+	if !isExist {
+		u.log.WithContext(ctx).Errorf("GetArticleById|GetArticleById fail,err:%v", err)
+		return nil, err
+	}
+	return &pb.GetArticleByIdResp{
+		Id:           m.Id,
+		Title:        m.Title,
+		Content:      m.Content,
+		CoverType:    int64(m.CoverType),
+		CoverImages:  m.CoverImages,
+		ChannelId:    m.ChannelId,
+		Status:       int64(m.Status),
+		AuthorId:     m.AuthorId,
+		ViewCount:    m.ViewCount,
+		LikeCount:    m.LikeCount,
+		CommentCount: m.CommentCount,
+		IsTop:        int64(m.IsTop),
+		IsRecommend:  int64(m.IsRecommend),
+		CreatedAt:    timestamppb.New(m.CreatedAt),
+		UpdatedAt:    timestamppb.New(m.CreatedAt),
+	}, nil
+
+}
+
+func (u *ArticleUsecase) UpdateArticleById(ctx context.Context, req *pb.UpdateArticleByIdReq) (*pb.UpdateArticleByIdResp, error) {
+	info, isExist := middleware.FromContext(ctx)
+	if !isExist {
+		return nil, ecode.ErrUserNotFound
+	}
+	err := u.repo.UpdateArticleById(ctx, &ArticleModel{
+		Id:           req.GetTarget(),
+		Title:        req.GetTitle(),
+		Content:      req.GetContent(),
+		CoverType:    int8(req.GetCover().GetType()),
+		CoverImages:  req.GetCover().GetImages(),
+		ChannelId:    req.GetChannelId(),
+		Status:       1,
+		AuthorId:     info.UserId,
+		ViewCount:    0,
+		LikeCount:    0,
+		CommentCount: 0,
+		IsTop:        0,
+		IsRecommend:  0,
+		UpdatedAt:    time.Now(),
+	})
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("UpdateArticleById|UpdateArticleById fail,err:%v", err)
+		return nil, err
+	}
+	return &pb.UpdateArticleByIdResp{}, nil
 }

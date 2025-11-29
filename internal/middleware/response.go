@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -60,35 +61,71 @@ func ResponseEncoder(w http.ResponseWriter, r *http.Request, v interface{}) erro
 		return json.NewEncoder(w).Encode(resp)
 	}
 
+	var data interface{}
+
 	// 检查是否为 protobuf 消息
 	if pm, ok := v.(proto.Message); ok {
-		//使用 protojson 序列化 protobuf 消息，保留零值字段
-		marshalOptions := protojson.MarshalOptions{
-			EmitUnpopulated: true, // 保留零值字段
-			UseProtoNames:   true, // 使用 proto 字段名
-		}
-
-		// 先序列化 protobuf 数据
-		protoData, err := marshalOptions.Marshal(pm)
-		if err != nil {
-			return err
-		}
-
-		// 将序列化后的 JSON 字节转换为 interface{}
-		var data interface{}
-		if err := json.Unmarshal(protoData, &data); err != nil {
-			return err
-		}
-
-		// 创建成功响应
-		resp := success(data)
-		//resp := success(pm)
-		return json.NewEncoder(w).Encode(resp)
+		// 对于 protobuf 消息，使用自定义的转换函数
+		data = convertProtoToMap(pm)
+	} else {
+		// 其他类型直接使用
+		data = v
 	}
 
-	// 其他类型包装为成功响应
-	resp := success(v)
+	// 创建成功响应
+	resp := success(data)
 	return json.NewEncoder(w).Encode(resp)
+}
+
+// 将 protobuf 消息转换为 map，保持数字类型
+func convertProtoToMap(pm proto.Message) interface{} {
+	marshalOptions := protojson.MarshalOptions{
+		EmitUnpopulated: true,
+		UseProtoNames:   true,
+		UseEnumNumbers:  true,
+	}
+
+	// 序列化为 JSON
+	protoData, err := marshalOptions.Marshal(pm)
+	if err != nil {
+		return nil
+	}
+
+	// 反序列化为 map
+	var result map[string]interface{}
+	if err := json.Unmarshal(protoData, &result); err != nil {
+		return nil
+	}
+
+	// 递归处理数字类型
+	return fixNumberTypes(result)
+}
+
+// 递归修复数字类型
+func fixNumberTypes(data interface{}) interface{} {
+	switch v := data.(type) {
+	case map[string]interface{}:
+		for key, value := range v {
+			v[key] = fixNumberTypes(value)
+		}
+		return v
+	case []interface{}:
+		for i, item := range v {
+			v[i] = fixNumberTypes(item)
+		}
+		return v
+	case string:
+		// 尝试将字符串转换为数字
+		if num, err := strconv.ParseInt(v, 10, 64); err == nil {
+			return num
+		}
+		if num, err := strconv.ParseFloat(v, 64); err == nil {
+			return num
+		}
+		return v
+	default:
+		return v
+	}
 }
 
 // 自定义错误编码器

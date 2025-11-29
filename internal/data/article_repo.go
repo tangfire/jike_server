@@ -2,7 +2,9 @@ package data
 
 import (
 	"context"
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"jike_server/internal/biz"
 	"jike_server/internal/utils"
 )
@@ -78,4 +80,39 @@ func (r *articleRepo) UpdateArticleStatus(ctx context.Context, idList []int64, s
 	}
 
 	return result.RowsAffected, nil
+}
+
+func (r *articleRepo) DeleteArticleById(ctx context.Context, id int64) error {
+	err := r.data.db.WithContext(ctx).Model(&Article{}).Delete(&Article{Id: id}).Error
+	if err != nil {
+		r.log.WithContext(ctx).Errorf("DeleteArticleById|Delete fail, id:%v, err:%v", id, err)
+		return err
+	}
+	return nil
+}
+
+func (r *articleRepo) GetArticleById(ctx context.Context, id int64) (bool, *biz.ArticleModel, error) {
+	data := Article{}
+	err := r.data.db.WithContext(ctx).Model(&Article{}).Where("id=?", id).First(&data).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil, nil
+	}
+	if err != nil {
+		r.log.WithContext(ctx).Errorf("GetArticleById|Get fail, id:%v, err:%v", id, err)
+		return false, nil, err
+	}
+	m := data.Data2Biz()
+	return true, m, nil
+}
+
+func (r *articleRepo) UpdateArticleById(ctx context.Context, article *biz.ArticleModel) error {
+	data := Article{}
+	data.Biz2Data(article)
+	err := r.data.db.WithContext(ctx).Model(&Article{}).Where("id = ?", article.Id).Updates(&data).Error
+	if err != nil {
+		r.log.WithContext(ctx).Errorf("UpdateArticleById|Update fail, id:%v, err:%v", data.Id, err)
+		return err
+	}
+	return nil
+
 }
